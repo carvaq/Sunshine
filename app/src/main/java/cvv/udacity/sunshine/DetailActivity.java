@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -13,9 +12,12 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        TextView textView = (TextView) findViewById(R.id.text_view);
         String text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        textView.setText(text);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, DetailFragment.newInstance(text, null))
+                    .commit();
+        }
     }
 
 
@@ -30,6 +32,7 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
