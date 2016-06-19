@@ -1,10 +1,16 @@
 package cvv.udacity.sunshine;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
@@ -16,26 +22,24 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String SHARE_TEXT = "%s #SunshineApp";
     private static final String ARG_FORECAST = "FORECAST_STRING";
-    private static final String ARG_PARAM2 = "param2";
+    private static final int LOADER_ID = 4543;
     private static final String TEXT_PLAIN = "text/plain";
 
     private ShareActionProvider mShareActionProvider;
     private String mForecastStr;
-    private String mParam2;
 
 
     public DetailFragment() {
         // Required empty public constructor
     }
 
-    public static DetailFragment newInstance(String param1, String param2) {
+    public static DetailFragment newInstance(String param1) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
         args.putString(ARG_FORECAST, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,7 +49,6 @@ public class DetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mForecastStr = getArguments().getString(ARG_FORECAST);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setHasOptionsMenu(true);
     }
@@ -54,10 +57,13 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_detail, container, false);
-        TextView textView = (TextView) root.findViewById(R.id.text_view);
-        textView.setText(mForecastStr);
-        return root;
+        return inflater.inflate(R.layout.fragment_detail, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class DetailFragment extends Fragment {
         MenuItem item = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
-        if (mShareActionProvider != null) {
+        if (mForecastStr != null) {
             setShareIntent(createShareIntent());
         }
     }
@@ -102,5 +108,44 @@ public class DetailFragment extends Fragment {
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(shareIntent);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(), Uri.parse(mForecastStr),
+                ForecastFragment.FORECAST_COLUMNS, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (!data.moveToFirst()) return;
+        String dateString = Utility.formatDate(
+                data.getLong(ForecastAdapter.COL_WEATHER_DATE));
+
+        String weatherDescription =
+                data.getString(ForecastAdapter.COL_WEATHER_DESC);
+
+        boolean isMetric = Utility.isMetric(getActivity());
+
+        String high = Utility.formatTemperature(
+                data.getDouble(ForecastAdapter.COL_WEATHER_MAX_TEMP), isMetric);
+
+        String low = Utility.formatTemperature(
+                data.getDouble(ForecastAdapter.COL_WEATHER_MIN_TEMP), isMetric);
+
+        String forecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
+
+        TextView detailTextView = (TextView) getView().findViewById(R.id.text_view);
+        detailTextView.setText(forecast);
+
+        // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

@@ -35,6 +35,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
 
+import cvv.udacity.sunshine.data.WeatherContract;
+import cvv.udacity.sunshine.data.WeatherContract.WeatherEntry;
+
 public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -281,7 +284,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                    .appendQueryParameter(APPID_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY)
+                    .appendQueryParameter(APPID_PARAM, SecretStuff.APP_ID)
                     .build();
 
             URL url = new URL(builtUri.toString());

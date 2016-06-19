@@ -8,14 +8,18 @@ import android.view.MenuItem;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private String mForecastStr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        String text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        if (getIntent() != null) {
+            mForecastStr = getIntent().getDataString();
+        }
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, DetailFragment.newInstance(text, null))
+                    .add(R.id.container, DetailFragment.newInstance(mForecastStr))
                     .commit();
         }
     }
