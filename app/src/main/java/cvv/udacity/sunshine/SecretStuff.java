@@ -8,5 +8,5 @@ package cvv.udacity.sunshine;
 
 public class SecretStuff {
 
-    public static final String APP_ID = "";
+    public static final String APP_ID = "f031283db3ca09aa1d2baa20718fa067";
 }

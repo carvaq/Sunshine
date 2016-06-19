@@ -1,19 +1,13 @@
 package cvv.udacity.sunshine;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -25,7 +19,7 @@ import java.util.List;
 public class ForecastFragment extends Fragment {
 
     private static final String TAG = ForecastFragment.class.getSimpleName();
-    private ArrayAdapter<String> mAdapter;
+    private ForecastAdapter mAdapter;
     private SharedPreferences mSharedPreferences;
 
     public ForecastFragment() {
@@ -47,10 +41,20 @@ public class ForecastFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.list_forecast);
 
-        mAdapter = new ArrayAdapter<>(getActivity(),
-                R.layout.list_item_forcast, R.id.list_item_forecast_textview, weekForecast);
+
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+
+        // Sort order:  Ascending, by date.
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri,
+                null, null, null, sortOrder);
+
+        mAdapter = new ForecastAdapter(getActivity(), cur, 0);
         listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -60,6 +64,7 @@ public class ForecastFragment extends Fragment {
                 startActivity(intent);
             }
         });
+*/
 
         return rootView;
     }
@@ -87,7 +92,7 @@ public class ForecastFragment extends Fragment {
     }
 
     private void updateWeather() {
-        new FetchWeatherTask(getActivity(), mAdapter).execute(
+        new FetchWeatherTask(getActivity()).execute(
                 mSharedPreferences.getString(getString(R.string.pref_location_key),
                         getString(R.string.pref_location_default)));
     }
