@@ -8,56 +8,67 @@
               android:minHeight="?android:attr/listPreferredItemHeight"
               android:paddingTop="@dimen/activity_vertical_margin">
 
-	<ImageView
-		android:id="@+id/list_item_icon"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:paddingLeft="@dimen/activity_horizontal_margin"
-		android:paddingRight="@dimen/activity_horizontal_margin"
-		tools:src="@mipmap/ic_launcher"/>
 
 	<LinearLayout
 		android:layout_width="0dp"
 		android:layout_height="match_parent"
-		android:layout_gravity="center_vertical"
 		android:layout_weight="1"
-		android:orientation="vertical">
-
-		<TextView
-			android:id="@+id/list_item_date_textview"
-			style="?attr/textAppearanceListItem"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:text="Tomorrow"/>
-
-		<TextView
-			android:id="@+id/list_item_forecast_textview"
-			style="?attr/textAppearanceListItemSmall"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			tools:text="Clear"/>
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="end"
+		android:gravity="center_horizontal"
 		android:orientation="vertical"
 		android:paddingLeft="@dimen/activity_horizontal_margin"
 		android:paddingRight="@dimen/activity_horizontal_margin">
 
 		<TextView
-			android:id="@+id/list_item_high_textview"
-			style="?attr/textAppearanceListItemSmall"
+			android:id="@+id/list_item_date_textview"
+			style="@style/TextAppearance.AppCompat.Headline"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			tools:text="Tomorrow"/>
+
+		<TextView
+			android:id="@+id/list_item_high_textview"
+			style="?attr/textAppearanceListItemSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="24sp"
 			tools:text="1°"/>
 
 		<TextView
 			android:id="@+id/list_item_low_textview"
-			style="?attr/textAppearanceListItemSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="24sp"
+			tools:text="12°"/>
+
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_weight="1"
+		android:gravity="center_horizontal"
+		android:orientation="vertical"
+
+		android:paddingLeft="@dimen/activity_horizontal_margin"
+		android:paddingRight="@dimen/activity_horizontal_margin">
+
+		<ImageView
+			android:id="@+id/list_item_icon"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			tools:text="12°"/>
+			android:scaleType="centerCrop"
+			android:adjustViewBounds="true"
+			android:paddingLeft="@dimen/activity_horizontal_margin"
+			android:paddingRight="@dimen/activity_horizontal_margin"
+			tools:src="@mipmap/ic_launcher"/>
+
+		<TextView
+			android:textAllCaps="true"
+			android:id="@+id/list_item_forecast_textview"
+			style="?attr/textAppearanceListItemSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			tools:text="Clear"/>
 	</LinearLayout>
 </LinearLayout>
