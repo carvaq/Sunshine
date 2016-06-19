@@ -38,6 +38,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Vector;
 
 import cvv.udacity.sunshine.data.WeatherContract.WeatherEntry;
@@ -64,8 +65,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         // Because the API returns a unix timestamp (measured in seconds),
         // it must be converted to milliseconds in order to be converted to valid date.
         Date date = new Date(time);
-        SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
-        return format.format(date).toString();
+        SimpleDateFormat format = new SimpleDateFormat("E, MMM d", Locale.getDefault());
+        return format.format(date);
     }
 
     /**
@@ -332,6 +333,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
+            final String APPID_PARAM = "APPID";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                     .appendQueryParameter(QUERY_PARAM, params[0])

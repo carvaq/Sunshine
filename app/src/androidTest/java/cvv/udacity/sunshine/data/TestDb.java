@@ -118,7 +118,7 @@ public class TestDb extends AndroidTestCase {
         assertFalse("RowId not -1", rowId == -1);
 
         Cursor cursor = db.query(WeatherContract.LocationEntry.TABLE_NAME, null, null, null, null, null, null);
-        assertFalse("Is empty", cursor.moveToNext());
+
         cursor.close();
         return rowId;
     }
