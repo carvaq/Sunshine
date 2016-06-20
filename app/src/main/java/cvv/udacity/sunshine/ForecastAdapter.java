@@ -76,8 +76,13 @@ public class ForecastAdapter extends CursorAdapter {
         // our view is pretty simple here --- just a text view
         // we'll keep the UI functional with a simple (and slow!) binding.
         ViewHolder viewHolder = (ViewHolder) view.getTag(R.id.view_holder);
-        int weatherId = cursor.getInt(COL_WEATHER_ID);
-
+        int weatherId = cursor.getInt(COL_WEATHER_CONDITION_ID);
+        int viewType = getItemViewType(cursor.getPosition()) ;
+        if(viewType == VIEW_TYPE_TODAY ) {
+            viewHolder.icon.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+        }else if(viewType == VIEW_TYPE_FUTURE_DAY){
+            viewHolder.icon.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
+        }
         long date = cursor.getLong(COL_WEATHER_DATE);
         String prettyDate = Utility.getFriendlyDayString(mContext, date);
         viewHolder.dateTextview.setText(prettyDate);
