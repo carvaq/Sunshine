@@ -30,8 +30,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private static final String TAG = ForecastFragment.class.getSimpleName();
     private static final int LOADER_ID = 13254;
+    private static final String CURRENT_POSITION = "current_pos";
     private ForecastAdapter mAdapter;
+    private ListView mListView;
     private SharedPreferences mSharedPreferences;
+    private int mCurrentPosition;
+
     public static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
@@ -66,16 +70,19 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ListView listView = (ListView) rootView.findViewById(R.id.list_forecast);
+        mListView = (ListView) rootView.findViewById(R.id.list_forecast);
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
 
+        if (savedInstanceState != null) {
+            mCurrentPosition = savedInstanceState.getInt(CURRENT_POSITION);
+        }
 
         mAdapter = new ForecastAdapter(getActivity(), null, 0);
 
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView adapterView, View view, int position, long l) {
@@ -139,10 +146,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mAdapter.swapCursor(data);
+        mListView.smoothScrollToPosition(mCurrentPosition);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(CURRENT_POSITION, mListView.getSelectedItemPosition());
     }
 }
