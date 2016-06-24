@@ -1,6 +1,5 @@
 package cvv.udacity.sunshine;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -85,11 +84,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                    locationSetting, cursor.getLong(ForecastAdapter.COL_WEATHER_DATE)
-                            ));
-                    startActivity(intent);
+                    Uri uri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                            locationSetting, cursor.getLong(ForecastAdapter.COL_WEATHER_DATE));
+                    if (getActivity() instanceof Callback) {
+                        ((Callback) getActivity()).onItemSelected(uri);
+                    }
                 }
             }
         });
