@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-	<style name="AppTheme.List">
+	<!-- Style for forecast listview -->
+	<style name="ForecastListStyle">
 		<item name="android:choiceMode">singleChoice</item>
 	</style>
 

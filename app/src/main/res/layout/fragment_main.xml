@@ -7,7 +7,7 @@
 
 	<ListView
 		android:id="@+id/list_forecast"
-		style="@style/AppTheme.List"
+		style="@style/ForecastListStyle"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 </FrameLayout>

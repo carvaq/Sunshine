@@ -53,6 +53,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             WeatherContract.LocationEntry.COLUMN_COORD_LAT,
             WeatherContract.LocationEntry.COLUMN_COORD_LONG
     };
+    private boolean mUseTodayLayout;
 
     public ForecastFragment() {
     }
@@ -79,6 +80,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
 
         mAdapter = new ForecastAdapter(getActivity(), null, 0);
+        mAdapter.setUseTodayLayout(mUseTodayLayout);
 
         mListView.setAdapter(mAdapter);
 
@@ -158,5 +160,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(CURRENT_POSITION, mListView.getSelectedItemPosition());
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mAdapter != null) {
+            mAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
     }
 }

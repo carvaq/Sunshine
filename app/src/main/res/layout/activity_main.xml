@@ -3,5 +3,6 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:name="cvv.udacity.sunshine.ForecastFragment"
 	tools:layout="@layout/fragment_main"
+	android:id="@+id/fragment_forecast"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"/>

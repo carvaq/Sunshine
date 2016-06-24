@@ -29,9 +29,14 @@ public class ForecastAdapter extends CursorAdapter {
     static final int COL_WEATHER_CONDITION_ID = 6;
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
+    private boolean mUseTodayLayout = true;
 
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
     }
 
 
@@ -77,10 +82,10 @@ public class ForecastAdapter extends CursorAdapter {
         // we'll keep the UI functional with a simple (and slow!) binding.
         ViewHolder viewHolder = (ViewHolder) view.getTag(R.id.view_holder);
         int weatherId = cursor.getInt(COL_WEATHER_CONDITION_ID);
-        int viewType = getItemViewType(cursor.getPosition()) ;
-        if(viewType == VIEW_TYPE_TODAY ) {
+        int viewType = getItemViewType(cursor.getPosition());
+        if (viewType == VIEW_TYPE_TODAY) {
             viewHolder.icon.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
-        }else if(viewType == VIEW_TYPE_FUTURE_DAY){
+        } else if (viewType == VIEW_TYPE_FUTURE_DAY) {
             viewHolder.icon.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
         }
         long date = cursor.getLong(COL_WEATHER_DATE);
@@ -103,7 +108,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
     @Override
