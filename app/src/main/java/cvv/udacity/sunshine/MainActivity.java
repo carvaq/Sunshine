@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements Callback {
         }
         return super.onOptionsItemSelected(item);
     }
-
     private void openPreferredLocationInMap() {
         String location = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.pref_location_key),
@@ -104,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements Callback {
             startActivity(intent);
         }
     }
-
     @Override
     public void onItemSelected(Uri dateUri) {
         if (mTwoPane) {

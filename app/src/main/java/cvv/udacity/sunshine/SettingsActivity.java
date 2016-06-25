@@ -1,9 +1,8 @@
 package cvv.udacity.sunshine;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -11,7 +10,7 @@ import android.preference.PreferenceManager;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
- * <p>
+ * <p/>
  * See <a href="http://developer.android.com/design/patterns/settings.html">
  * Android Design: Settings</a> for design guidelines and the <a
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
@@ -67,12 +66,17 @@ public class SettingsActivity extends PreferenceActivity
                         .putString(getString(R.string.pref_units_label), stringValue)
                         .apply();
             }
-        } else {
+        } else if (preference instanceof EditTextPreference) {
             // For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
             mSharedPreferences.edit()
                     .putString(getString(R.string.pref_location_key), stringValue)
                     .apply();
+     /*   } else if (preference instanceof CheckBoxPreference) {
+            preference.setSummary(stringValue);
+            mSharedPreferences.edit()
+                    .putString( getString(R.string.pref_enable_notifications_key),stringValue)
+                    .apply();*/
         }
         return true;
     }
