@@ -5,8 +5,4 @@
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_location"
-        android:title="@string/pref_location_label"
-        app:showAsAction="ifRoom"/>
 </menu>
