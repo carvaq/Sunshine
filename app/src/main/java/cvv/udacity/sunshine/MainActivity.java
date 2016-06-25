@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
+
 public class MainActivity extends AppCompatActivity implements Callback {
     private static final String TAG = MainActivity.class.getSimpleName();
     private String mLocation;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
 
         mLocation = Utility.getPreferredLocation(this);
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
