@@ -112,5 +112,11 @@
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="4dp"
 			tools:text="@string/format_wind_kmh"/>
+
+		<cvv.udacity.sunshine.CustomView
+			android:id="@+id/custom"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
 	</LinearLayout>
+
 </ScrollView>
