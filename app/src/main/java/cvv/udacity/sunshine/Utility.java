@@ -27,6 +27,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
+
+import static android.R.attr.key;
+
 public class Utility {
     private static final String TAG = Utility.class.getSimpleName();
 
@@ -244,5 +248,20 @@ public class Utility {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+
+    @SuppressWarnings("WrongConstant")
+    @SunshineSyncAdapter.LocationStatus
+    public static int getLocationStatus(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getInt(context.getString(R.string.loc_status),
+                SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN);
+    }
+
+    public static void resetLocationStatus(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences.edit().putInt(context.getString(R.string.loc_status),
+                SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN).apply();
     }
 }

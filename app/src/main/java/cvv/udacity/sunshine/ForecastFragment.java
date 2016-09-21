@@ -1,9 +1,11 @@
 package cvv.udacity.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -28,7 +30,7 @@ import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
  * Date: 11.06.2016
  * Project: Sunshine
  */
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = ForecastFragment.class.getSimpleName();
     private static final int LOADER_ID = 13254;
@@ -44,6 +46,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public static final long SYNC_INTERVAL =
             SYNC_INTERVAL_IN_MINUTES *
                     SECONDS_PER_MINUTE;
+
 
     public static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
@@ -112,6 +115,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -185,8 +202,19 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             if (mCurrentPosition != ListView.INVALID_POSITION) {
                 mListView.smoothScrollToPosition(mCurrentPosition);
             }
-        } else if (!Utility.isConnected(getActivity())) {
-            mEmptyView.setText(R.string.no_connection);
+        }
+    }
+
+    private void updateEmptyView(@SunshineSyncAdapter.LocationStatus int locationStatus) {
+        Log.d(TAG, "Updating empty view with " + locationStatus);
+        if (!Utility.isConnected(getActivity())) {
+            mEmptyView.setText(R.string.empty_forecast_list_no_connection);
+        } else if (locationStatus == SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN) {
+            mEmptyView.setText(R.string.empty_forecast_list_server_down);
+        } else if (locationStatus == SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID) {
+            mEmptyView.setText(R.string.empty_forecast_list_server_error);
+        } else if (locationStatus == SunshineSyncAdapter.LOCATION_STATUS_INVALID) {
+            mEmptyView.setText(R.string.empty_forecast_list_invalid_location);
         }
     }
 
@@ -205,6 +233,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         mUseTodayLayout = useTodayLayout;
         if (mAdapter != null) {
             mAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (getString(R.string.loc_status).equals(s)) {
+            updateEmptyView(Utility.getLocationStatus(getActivity()));
         }
     }
 }

@@ -7,6 +7,9 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
@@ -18,8 +21,9 @@ import android.preference.PreferenceManager;
  */
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity
-        implements Preference.OnPreferenceChangeListener {
+        implements Preference.OnPreferenceChangeListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = "SettingsActivity";
     private SharedPreferences mSharedPreferences;
 
 
@@ -33,6 +37,23 @@ public class SettingsActivity extends PreferenceActivity
 
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
+
+        LocationEditTextPreference preference =
+                (LocationEditTextPreference)
+                        findPreference(getString(R.string.pref_location_key));
+        Log.d(TAG, "" + preference.getMinLength());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -68,10 +89,12 @@ public class SettingsActivity extends PreferenceActivity
             }
         } else if (preference instanceof EditTextPreference) {
             // For other preferences, set the summary to the value's simple string representation.
-            preference.setSummary(stringValue);
+            setLocationSummary(preference, stringValue);
             mSharedPreferences.edit()
                     .putString(getString(R.string.pref_location_key), stringValue)
                     .apply();
+            Utility.resetLocationStatus(SettingsActivity.this);
+
      /*   } else if (preference instanceof CheckBoxPreference) {
             preference.setSummary(stringValue);
             mSharedPreferences.edit()
@@ -81,4 +104,26 @@ public class SettingsActivity extends PreferenceActivity
         return true;
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (getString(R.string.loc_status).equals(s)) {
+            Preference preference = findPreference(getString(R.string.pref_location_key));
+            setLocationSummary(preference, preference.getSummary());
+        }
+    }
+
+    private void setLocationSummary(Preference preference, CharSequence summary) {
+        @SunshineSyncAdapter.LocationStatus int status = Utility.getLocationStatus(SettingsActivity.this);
+        switch (status) {
+            case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
+                preference.setSummary(getString(R.string.pref_location_unknown_description));
+                break;
+            case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                preference.setSummary(getString(R.string.pref_location_error_description));
+                break;
+            default:
+                preference.setSummary(summary);
+                break;
+        }
+    }
 }

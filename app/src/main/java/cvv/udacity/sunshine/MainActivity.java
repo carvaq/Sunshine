@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
         if (findViewById(R.id.weather_detail_container) != null) {
             mTwoPane = true;
             if (savedInstanceState != null) {
+                mLocation = Utility.getPreferredLocation(this);
 
                 Bundle arguments = new Bundle();
                 arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements Callback {
         forecastFragment.setUseTodayLayout(!mTwoPane);
 
 
-        mLocation = Utility.getPreferredLocation(this);
         SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
