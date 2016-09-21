@@ -241,7 +241,6 @@ public class WeatherProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        db.close();
         return returnUri;
     }
 
@@ -268,7 +267,6 @@ public class WeatherProvider extends ContentProvider {
         if (rowsDeleted > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        db.close();
         return rowsDeleted;
     }
 
@@ -302,7 +300,6 @@ public class WeatherProvider extends ContentProvider {
         if (rowsUpdated > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        db.close();
         return rowsUpdated;
     }
 

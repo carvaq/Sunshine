@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import cvv.udacity.sunshine.data.WeatherContract;
 import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
@@ -34,6 +35,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String CURRENT_POSITION = "current_pos";
     private ForecastAdapter mAdapter;
     private ListView mListView;
+    private TextView mEmptyView;
     private int mCurrentPosition;
 
     // Sync interval constants
@@ -78,6 +80,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mListView = (ListView) rootView.findViewById(R.id.list_forecast);
+        mEmptyView = (TextView) rootView.findViewById(R.id.no_data);
+        mListView.setEmptyView(mEmptyView);
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
 
@@ -121,7 +125,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     /*    if (item.getItemId() == R.id.action_refresh) {
             updateWeather();
             return true;
-        } else */if (item.getItemId() == R.id.action_location) {
+        } else */
+        if (item.getItemId() == R.id.action_location) {
             openPreferredLocationInMap();
             return true;
         } else {
@@ -132,8 +137,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private void openPreferredLocationInMap() {
         if (null != mAdapter) {
             Cursor c = mAdapter.getCursor();
-            if (null != c) {
-                c.moveToPosition(0);
+            if (null != c && c.moveToNext()) {
                 String posLat = c.getString(ForecastAdapter.COL_COORD_LAT);
                 String posLong = c.getString(ForecastAdapter.COL_COORD_LONG);
                 Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
@@ -176,8 +180,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
-        mListView.smoothScrollToPosition(mCurrentPosition);
+        if (data != null && data.getCount() > 0) {
+            mAdapter.swapCursor(data);
+            if (mCurrentPosition != ListView.INVALID_POSITION) {
+                mListView.smoothScrollToPosition(mCurrentPosition);
+            }
+        } else if (!Utility.isConnected(getActivity())) {
+            mEmptyView.setText(R.string.no_connection);
+        }
     }
 
     @Override
