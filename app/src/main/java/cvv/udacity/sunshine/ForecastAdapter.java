@@ -1,4 +1,4 @@
-package cvv.udacity.sunshine;/*
+/*
  * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package cvv.udacity.sunshine;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cvv.udacity.sunshine;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -32,17 +33,7 @@ public class ForecastAdapter extends CursorAdapter {
     private static final int VIEW_TYPE_COUNT = 2;
     private static final int VIEW_TYPE_TODAY = 0;
     private static final int VIEW_TYPE_FUTURE_DAY = 1;
-    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
-    // must change.
-    static final int COL_WEATHER_ID = 0;
-    static final int COL_WEATHER_DATE = 1;
-    static final int COL_WEATHER_DESC = 2;
-    static final int COL_WEATHER_MAX_TEMP = 3;
-    static final int COL_WEATHER_MIN_TEMP = 4;
-    static final int COL_LOCATION_SETTING = 5;
-    static final int COL_WEATHER_CONDITION_ID = 6;
-    static final int COL_COORD_LAT = 7;
-    static final int COL_COORD_LONG = 8;
+
     // Flag to determine if we want to use a separate view for "today".
     private boolean mUseTodayLayout = true;
 
@@ -99,7 +90,7 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int viewType = getItemViewType(cursor.getPosition());
-        int weatherId = cursor.getInt(COL_WEATHER_CONDITION_ID);
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
                 // Get weather icon
@@ -116,7 +107,7 @@ public class ForecastAdapter extends CursorAdapter {
         }
 
         // Read date from cursor
-        long dateInMillis = cursor.getLong(COL_WEATHER_DATE);
+        long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         // Find TextView and set formatted date on it
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
@@ -132,13 +123,13 @@ public class ForecastAdapter extends CursorAdapter {
 
         // Read high temperature from cursor
         String high = Utility.formatTemperature(
-                context, cursor.getDouble(COL_WEATHER_MAX_TEMP));
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP));
         viewHolder.highTempView.setText(high);
         viewHolder.highTempView.setContentDescription(context.getString(R.string.a11y_high_temp, high));
 
         // Read low temperature from cursor
         String low = Utility.formatTemperature(
-                context, cursor.getDouble(COL_WEATHER_MIN_TEMP));
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
         viewHolder.lowTempView.setText(low);
         viewHolder.lowTempView.setContentDescription(context.getString(R.string.a11y_low_temp, low));
     }

@@ -1,5 +1,5 @@
-package cvv.udacity.sunshine.data;/*
- * Copyright (C) 2014 The Android Open Source Project
+/*
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ package cvv.udacity.sunshine.data;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cvv.udacity.sunshine.data;
 
 import android.content.ComponentName;
 import android.content.ContentUris;
@@ -26,8 +27,8 @@ import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import static cvv.udacity.sunshine.data.WeatherContract.LocationEntry;
-import static cvv.udacity.sunshine.data.WeatherContract.WeatherEntry;
+import cvv.udacity.sunshine.data.WeatherContract.LocationEntry;
+import cvv.udacity.sunshine.data.WeatherContract.WeatherEntry;
 
 /*
     Note: This is not a complete set of tests of the Sunshine ContentProvider, but it does test
@@ -83,20 +84,6 @@ public class TestProvider extends AndroidTestCase {
     }
 
     /*
-       This helper function deletes all records from both database tables using the database
-       functions only.  This is designed to be used to reset the state of the database until the
-       delete functionality is available in the ContentProvider.
-     */
-    public void deleteAllRecordsFromDB() {
-        WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        db.delete(WeatherEntry.TABLE_NAME, null, null);
-        db.delete(LocationEntry.TABLE_NAME, null, null);
-        db.close();
-    }
-
-    /*
         Student: Refactor this function to use the deleteAllRecordsFromProvider functionality once
         you have implemented delete functionality there.
      */
@@ -130,7 +117,7 @@ public class TestProvider extends AndroidTestCase {
 
             // Make sure that the registered authority matches the authority from the Contract.
             assertEquals("Error: WeatherProvider registered with authority: " + providerInfo.authority +
-                            " instead of authority: " + WeatherContract.CONTENT_AUTHORITY,
+                    " instead of authority: " + WeatherContract.CONTENT_AUTHORITY,
                     providerInfo.authority, WeatherContract.CONTENT_AUTHORITY);
         } catch (PackageManager.NameNotFoundException e) {
             // I guess the provider isn't registered correctly.
@@ -237,7 +224,7 @@ public class TestProvider extends AndroidTestCase {
 
         // Has the NotificationUri been set correctly? --- we can only test this easily against API
         // level 19 or greater because getNotificationUri was added in API level 19.
-        if (Build.VERSION.SDK_INT >= 19) {
+        if ( Build.VERSION.SDK_INT >= 19 ) {
             assertEquals("Error: Location Query did not properly set NotificationUri",
                     locationCursor.getNotificationUri(), LocationEntry.CONTENT_URI);
         }
@@ -272,7 +259,7 @@ public class TestProvider extends AndroidTestCase {
 
         int count = mContext.getContentResolver().update(
                 LocationEntry.CONTENT_URI, updatedValues, LocationEntry._ID + "= ?",
-                new String[]{Long.toString(locationRowId)});
+                new String[] { Long.toString(locationRowId)});
         assertEquals(count, 1);
 
         // Test to make sure our observer is called.  If not, we throw an assertion.
@@ -436,24 +423,23 @@ public class TestProvider extends AndroidTestCase {
 
 
     static private final int BULK_INSERT_RECORDS_TO_INSERT = 10;
-
     static ContentValues[] createBulkInsertWeatherValues(long locationRowId) {
         long currentTestDate = TestUtilities.TEST_DATE;
-        long millisecondsInADay = 1000 * 60 * 60 * 24;
+        long millisecondsInADay = 1000*60*60*24;
         ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_RECORDS_TO_INSERT];
 
-        for (int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, currentTestDate += millisecondsInADay) {
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, currentTestDate+= millisecondsInADay ) {
             ContentValues weatherValues = new ContentValues();
-            weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationRowId);
-            weatherValues.put(WeatherEntry.COLUMN_DATE, currentTestDate);
-            weatherValues.put(WeatherEntry.COLUMN_DEGREES, 1.1);
-            weatherValues.put(WeatherEntry.COLUMN_HUMIDITY, 1.2 + 0.01 * (float) i);
-            weatherValues.put(WeatherEntry.COLUMN_PRESSURE, 1.3 - 0.01 * (float) i);
-            weatherValues.put(WeatherEntry.COLUMN_MAX_TEMP, 75 + i);
-            weatherValues.put(WeatherEntry.COLUMN_MIN_TEMP, 65 - i);
-            weatherValues.put(WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
-            weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, 5.5 + 0.2 * (float) i);
-            weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, 321);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, currentTestDate);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2 + 0.01 * (float) i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3 - 0.01 * (float) i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 75 + i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 65 - i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5 + 0.2 * (float) i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
             returnContentValues[i] = weatherValues;
         }
         return returnContentValues;
@@ -520,7 +506,7 @@ public class TestProvider extends AndroidTestCase {
 
         // and let's make sure they match the ones we created
         cursor.moveToFirst();
-        for (int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext()) {
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
             TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating WeatherEntry " + i,
                     cursor, bulkInsertContentValues[i]);
         }

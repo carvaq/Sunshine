@@ -1,4 +1,4 @@
-package cvv.udacity.sunshine.data;/*
+/*
  * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package cvv.udacity.sunshine.data;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cvv.udacity.sunshine.data;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -130,7 +131,7 @@ public class WeatherContract {
         }
 
         /*
-            Student: Fill in this buildWeatherLocation function
+            Student: This is the buildWeatherLocation function you filled in.
          */
         public static Uri buildWeatherLocation(String locationSetting) {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();

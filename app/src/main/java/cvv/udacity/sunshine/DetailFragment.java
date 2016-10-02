@@ -1,4 +1,4 @@
-package cvv.udacity.sunshine;/*
+/*
  * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package cvv.udacity.sunshine;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cvv.udacity.sunshine;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -152,8 +153,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // replace the uri, since the location has changed
         Uri uri = mUri;
         if (null != uri) {
-            long date = WeatherEntry.getDateFromUri(uri);
-            Uri updatedUri = WeatherEntry.buildWeatherLocationWithDate(newLocation, date);
+            long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
+            Uri updatedUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(newLocation, date);
             mUri = updatedUri;
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
         }

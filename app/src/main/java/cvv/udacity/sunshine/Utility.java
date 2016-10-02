@@ -1,4 +1,4 @@
-package cvv.udacity.sunshine;/*
+/*
  * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package cvv.udacity.sunshine;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cvv.udacity.sunshine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,11 +22,11 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 
+import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import cvv.udacity.sunshine.sync.SunshineSyncAdapter;
 
 public class Utility {
     public static String getPreferredLocation(Context context) {
@@ -88,10 +89,10 @@ public class Utility {
         if (julianDay == currentJulianDay) {
             String today = context.getString(R.string.today);
             int formatId = R.string.format_full_friendly_date;
-            return context.getString(
+            return String.format(context.getString(
                     formatId,
                     today,
-                    getFormattedMonthDay(context, dateInMillis));
+                    getFormattedMonthDay(context, dateInMillis)));
         } else if ( julianDay < currentJulianDay + 7 ) {
             // If the input date is less than a week in the future, just return the day name.
             return getDayName(context, dateInMillis);

@@ -1,5 +1,5 @@
-package cvv.udacity.sunshine.data;/*
- * Copyright (C) 2014 The Android Open Source Project
+/*
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ package cvv.udacity.sunshine.data;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package cvv.udacity.sunshine.data;
 
 import android.net.Uri;
 import android.test.AndroidTestCase;
@@ -30,15 +31,15 @@ public class TestWeatherContract extends AndroidTestCase {
     /*
         Students: Uncomment this out to test your weather location function.
      */
-   public void testBuildWeatherLocation() {
-       Uri locationUri = WeatherContract.WeatherEntry.buildWeatherLocation(TEST_WEATHER_LOCATION);
-       assertNotNull("Error: Null Uri returned.  You must fill-in buildWeatherLocation in " +
-                       "WeatherContract.",
-               locationUri);
-       assertEquals("Error: Weather location not properly appended to the end of the Uri",
-               TEST_WEATHER_LOCATION, locationUri.getLastPathSegment());
-       assertEquals("Error: Weather location Uri doesn't match our expected result",
-               locationUri.toString(),
-               "content://cvv.udacity.sunshine/weather/%2FNorth%20Pole");
-   }
+    public void testBuildWeatherLocation() {
+        Uri locationUri = WeatherContract.WeatherEntry.buildWeatherLocation(TEST_WEATHER_LOCATION);
+        assertNotNull("Error: Null Uri returned.  You must fill-in buildWeatherLocation in " +
+                        "WeatherContract.",
+                locationUri);
+        assertEquals("Error: Weather location not properly appended to the end of the Uri",
+                TEST_WEATHER_LOCATION, locationUri.getLastPathSegment());
+        assertEquals("Error: Weather location Uri doesn't match our expected result",
+                locationUri.toString(),
+                "content://cvv.udacity.sunshine/weather/%2FNorth%20Pole");
+    }
 }
