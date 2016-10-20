@@ -17,7 +17,7 @@ package com.example.android.sunshine.app;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +25,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.android.sunshine.app.data.WeatherContract;
 
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
  * from a {@link Cursor} to a {@link android.widget.ListView}.
  */
-public class ForecastAdapter extends CursorAdapter {
+public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
 
     private static final int VIEW_TYPE_COUNT = 2;
     private static final int VIEW_TYPE_TODAY = 0;
@@ -38,34 +39,58 @@ public class ForecastAdapter extends CursorAdapter {
 
     // Flag to determine if we want to use a separate view for "today".
     private boolean mUseTodayLayout = true;
+    private Cursor mCursor;
+    private final Context mContext;
+    private final ForecastAdapterOnClickHandler mClickHandler;
+    private final View mEmptyView;
 
     /**
      * Cache of the children views for a forecast list item.
      */
-    public static class ViewHolder {
+    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView mIconView;
         public final TextView mDateView;
         public final TextView mDescriptionView;
         public final TextView mHighTempView;
         public final TextView mLowTempView;
 
-        public ViewHolder(View view) {
+        public ForecastAdapterViewHolder(View view) {
+            super(view);
             mIconView = (ImageView) view.findViewById(R.id.list_item_icon);
             mDateView = (TextView) view.findViewById(R.id.list_item_date_textview);
             mDescriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
             mHighTempView = (TextView) view.findViewById(R.id.list_item_high_textview);
             mLowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
+            view.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int dateColumnIndex = mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
+            //mICM.onClick(this);
+            mClickHandler.onClick(mCursor.getLong(dateColumnIndex), this );
+        }
+
     }
 
-    public ForecastAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
+    public ForecastAdapter(Context context, ForecastAdapterOnClickHandler clickHandler, View emptyView) {
+        mContext = context;
+        mClickHandler = clickHandler;
+        mEmptyView = emptyView;
+    }
+
+    public interface ForecastAdapterOnClickHandler {
+        void onClick(Long date, RecyclerView.ViewHolder viewHolder);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        // Choose the layout type
-        int viewType = getItemViewType(cursor.getPosition());
+    public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutId = -1;
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
@@ -78,22 +103,18 @@ public class ForecastAdapter extends CursorAdapter {
             }
         }
 
-        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
-
-        ViewHolder viewHolder = new ViewHolder(view);
-        view.setTag(viewHolder);
-
-        return view;
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+        return new ForecastAdapterViewHolder(view);
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
+        mCursor.moveToPosition(position);
 
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        int weatherId = mCursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         int defaultImage;
 
-        switch (getItemViewType(cursor.getPosition())) {
+        switch (getItemViewType(position)) {
             case VIEW_TYPE_TODAY:
                 defaultImage = Utility.getArtResourceForWeatherCondition(weatherId);
                 break;
@@ -102,26 +123,26 @@ public class ForecastAdapter extends CursorAdapter {
         }
 
         if (Utility.usingLocalGraphics(mContext)) {
-            viewHolder.mIconView.
+            forecastAdapterViewHolder.mIconView.
                     setImageResource(defaultImage);
         } else {
             Glide.with(mContext)
                     .load(Utility.getArtUrlForWeatherCondition(mContext, weatherId))
                     .error(defaultImage)
                     .crossFade()
-                    .into(viewHolder.mIconView);
+                    .into(forecastAdapterViewHolder.mIconView);
         }
 
         // Read date from cursor
-        long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
+        long dateInMillis = mCursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         // Find TextView and set formatted date on it
-        viewHolder.mDateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
+        forecastAdapterViewHolder.mDateView.setText(Utility.getFriendlyDayString(mContext, dateInMillis));
 
         // Read weather forecast from cursor
         String description = Utility.getStringForWeatherCondition(mContext, weatherId);
         // Find TextView and set weather forecast on it
-        viewHolder.mDescriptionView.setText(description);
-        viewHolder.mDescriptionView.setContentDescription(mContext.getString(R.string.a11y_forecast, description));
+        forecastAdapterViewHolder.mDescriptionView.setText(description);
+        forecastAdapterViewHolder.mDescriptionView.setContentDescription(mContext.getString(R.string.a11y_forecast, description));
 
         // For accessibility, we don't want a content description for the icon field
         // because the information is repeated in the description view and the icon
@@ -130,18 +151,14 @@ public class ForecastAdapter extends CursorAdapter {
         // Read high temperature from cursor
         double high = mCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
         String highString = Utility.formatTemperature(mContext, high);
-        viewHolder.mHighTempView.setText(highString);
-        viewHolder.mHighTempView.setContentDescription(mContext.getString(R.string.a11y_high_temp, highString));
+        forecastAdapterViewHolder.mHighTempView.setText(highString);
+        forecastAdapterViewHolder.mHighTempView.setContentDescription(mContext.getString(R.string.a11y_high_temp, highString));
 
         // Read low temperature from cursor
         double low = mCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
         String lowString = Utility.formatTemperature(mContext, low);
-        viewHolder.mLowTempView.setText(lowString);
-        viewHolder.mLowTempView.setContentDescription(mContext.getString(R.string.a11y_low_temp, lowString));
-    }
-
-    public void setUseTodayLayout(boolean useTodayLayout) {
-        mUseTodayLayout = useTodayLayout;
+        forecastAdapterViewHolder.mLowTempView.setText(lowString);
+        forecastAdapterViewHolder.mLowTempView.setContentDescription(mContext.getString(R.string.a11y_low_temp, lowString));
     }
 
     @Override
@@ -150,7 +167,22 @@ public class ForecastAdapter extends CursorAdapter {
     }
 
     @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
+    public int getItemCount() {
+        return mCursor != null ? mCursor.getCount() : 0;
     }
+
+    public Cursor getCursor() {
+        return mCursor;
+    }
+
+    public void swapCursor(Cursor cursor) {
+        mCursor = cursor;
+        if (getItemCount() != 0) {
+            mEmptyView.setVisibility(View.GONE);
+        } else {
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        notifyDataSetChanged();
+    }
+
 }
