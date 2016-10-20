@@ -17,6 +17,8 @@ package com.example.android.sunshine.app;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             mHighTempView = (TextView) view.findViewById(R.id.list_item_high_textview);
             mLowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
             view.setOnClickListener(this);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mIconView.setTransitionName(mContext.getString(R.string.details_transition_name));
+            }
         }
 
         @Override
@@ -70,7 +76,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
             mCursor.moveToPosition(adapterPosition);
             int dateColumnIndex = mCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_DATE);
             //mICM.onClick(this);
-            mClickHandler.onClick(mCursor.getLong(dateColumnIndex), this );
+            mClickHandler.onClick(mCursor.getLong(dateColumnIndex), this);
         }
 
     }
@@ -82,7 +88,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     }
 
     public interface ForecastAdapterOnClickHandler {
-        void onClick(Long date, RecyclerView.ViewHolder viewHolder);
+        void onClick(Long date, ForecastAdapterViewHolder viewHolder);
     }
 
     public void setUseTodayLayout(boolean useTodayLayout) {
@@ -132,6 +138,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
                     .crossFade()
                     .into(forecastAdapterViewHolder.mIconView);
         }
+        ViewCompat.setTransitionName(forecastAdapterViewHolder.mIconView, "iconView" + position);
 
         // Read date from cursor
         long dateInMillis = mCursor.getLong(ForecastFragment.COL_WEATHER_DATE);

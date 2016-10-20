@@ -15,8 +15,10 @@
  */
 package com.example.android.sunshine.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -51,6 +55,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
     private boolean mUseTodayLayout;
+    private boolean mHoldForTranstion;
 
     private static final String SELECTED_KEY = "selected_position";
 
@@ -96,7 +101,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri dateUri);
+        public void onItemSelected(Uri dateUri, ForecastAdapter.ForecastAdapterViewHolder viewHolder);
     }
 
     public ForecastFragment() {
@@ -107,6 +112,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ForecastFragment, 0, 0);
+        mHoldForTranstion = a.getBoolean(R.styleable.ForecastFragment_sharedElementTransitions, false);
+        a.recycle();
     }
 
     @Override
@@ -161,14 +174,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         ForecastAdapter.ForecastAdapterOnClickHandler listener = new ForecastAdapter.ForecastAdapterOnClickHandler() {
 
             @Override
-            public void onClick(Long date, RecyclerView.ViewHolder viewHolder) {
+            public void onClick(Long date, ForecastAdapter.ForecastAdapterViewHolder viewHolder) {
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
                 if (date != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
                     ((Callback) getActivity())
                             .onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                    locationSetting, date));
+                                    locationSetting, date), viewHolder);
                 }
                 mPosition = viewHolder.getAdapterPosition();
             }
@@ -217,6 +230,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        if (mHoldForTranstion) {
+            getActivity().supportPostponeEnterTransition();
+        }
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -294,6 +310,23 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             mRecyclerView.smoothScrollToPosition(mPosition);
         }
         updateEmptyView();
+        if (data.getCount() == 0) {
+            getActivity().supportStartPostponedEnterTransition();
+        } else {
+            mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    if (mRecyclerView.getChildCount() > 0) {
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        if (mHoldForTranstion) {
+                            getActivity().supportStartPostponedEnterTransition();
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
     }
 
     @Override
