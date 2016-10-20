@@ -15,6 +15,7 @@
  */
 package com.example.android.sunshine.app;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -152,7 +153,13 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         } else {
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(contentUri);
-            startActivity(intent);
+            Bundle options = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                options = ActivityOptions.
+                        makeSceneTransitionAnimation(this).toBundle();
+            }
+            // start the new activity
+            startActivity(intent, options);
         }
     }
 

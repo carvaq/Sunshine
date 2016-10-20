@@ -264,7 +264,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         Toolbar toolbarView = (Toolbar) getView().findViewById(R.id.toolbar);
 
-        // We need to start the enter transition after the data has loaded
+        // We need to start the enter details_window_enter_transition after the data has loaded
         if (activity instanceof DetailActivity) {
             activity.supportStartPostponedEnterTransition();
 

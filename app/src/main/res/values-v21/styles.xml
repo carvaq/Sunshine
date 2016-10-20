@@ -15,10 +15,23 @@
      limitations under the License.
  -->
 <resources>
-    <!-- Settings activity theme. -->
-    <style name="SettingsTheme" parent="@android:style/Theme.Material.Light.DarkActionBar">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark</item>
-    </style>
+	<!-- Settings activity theme. -->
+	<style name="SettingsTheme" parent="@android:style/Theme.Material.Light.DarkActionBar">
+		<item name="android:colorPrimary">@color/primary</item>
+		<item name="android:colorPrimaryDark">@color/primary_dark</item>
+	</style>
+
+	<style name="AppTheme.Main">
+		<item name="android:windowActivityTransitions">true</item>
+	</style>
+
+	<style name="AppTheme.Details">
+		<item name="android:windowActivityTransitions">true</item>
+		<!-- specify enter and exit transitions -->
+		<item name="android:windowEnterTransition">@transition/details_window_enter_transition
+		</item>
+		<item name="android:windowExitTransition">@transition/details_window_exit_transition</item>
+	</style>
+
 
 </resources>
