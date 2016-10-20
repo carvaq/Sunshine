@@ -14,29 +14,30 @@
      limitations under the License.
  -->
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_logo"
-            android:scaleType="center"/>
-        </android.support.v7.widget.Toolbar>
+	<android.support.v7.widget.Toolbar
+		android:id="@+id/toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="?attr/actionBarSize"
+		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <fragment
-        android:id="@+id/fragment_forecast"
-        android:name="cvv.udacity.sunshine.ForecastFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="cvv.udacity.sunshine.ForecastFragment"
-        tools:layout="@android:layout/list_content" />
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_logo"
+			android:scaleType="center"/>
+	</android.support.v7.widget.Toolbar>
+
+	<fragment
+		android:id="@+id/fragment_forecast"
+		android:name="cvv.udacity.sunshine.ForecastFragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:context="cvv.udacity.sunshine.ForecastFragment"
+		tools:layout="@android:layout/list_content"/>
 </LinearLayout>
