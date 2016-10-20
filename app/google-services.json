@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:298103559943:android:d16bf2620bf7d286",
         "android_client_info": {
-          "package_name": "cvv.udacity.sunshine"
+          "package_name": "com.example.android.sunshine.app"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "298103559943-fvf6o2iejh20qasmvk4avqsqmn0incsv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "cvv.udacity.sunshine",
+            "package_name": "com.example.android.sunshine.app",
             "certificate_hash": "00178CD2BBA27A08623518A6E1ECFA6F45905CAA"
           }
         },
