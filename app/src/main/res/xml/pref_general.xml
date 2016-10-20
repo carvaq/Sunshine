@@ -42,9 +42,9 @@
         android:summaryOn="@string/pref_enable_notifications_true"
         android:defaultValue="@string/pref_enable_notifications_default" />
     <ListPreference
-        android:title="@string/pref_icon_pack_label"
-        android:key="@string/pref_icon_pack_key"
-        android:defaultValue="@string/pref_icon_pack_colored"
+        android:title="@string/pref_art_pack_label"
+        android:key="@string/pref_art_pack_key"
+        android:defaultValue="@string/pref_art_pack_cute_dogs"
         android:entryValues="@array/pref_icon_pack_values"
         android:entries="@array/pref_icon_pack_options"  />
 

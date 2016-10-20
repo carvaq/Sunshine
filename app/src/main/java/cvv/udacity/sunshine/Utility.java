@@ -267,8 +267,8 @@ public class Utility {
         // Based on weather code data found at:
         // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
         String url = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(context.getString(R.string.pref_icon_pack_key),
-                        context.getString(R.string.pref_icon_pack_colored));
+                .getString(context.getString(R.string.pref_art_pack_key),
+                        context.getString(R.string.pref_art_pack_cute_dogs));
 
         if (weatherId >= 200 && weatherId <= 232) {
             return String.format(Locale.getDefault(), url, "storm");
