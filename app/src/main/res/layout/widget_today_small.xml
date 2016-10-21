@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:id="@+id/widget"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/primary"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              tools:layout_height="50dp"
+              tools:layout_width="40dp">
 
 	<ImageView
 		android:id="@+id/widget_icon"
@@ -12,13 +15,11 @@
 		android:layout_height="0dp"
 		android:layout_gravity="center"
 		android:layout_weight="1"
-		android:gravity="center"/>
+		android:gravity="center"
+		tools:src="@drawable/art_clear"/>
 
 	<TextView
 		android:id="@+id/widget_high_temperature"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:gravity="center"
-		android:textColor="@color/white"/>
+		style="@style/AppTheme.HighTemp"
+		tools:text="30°"/>
 </LinearLayout>

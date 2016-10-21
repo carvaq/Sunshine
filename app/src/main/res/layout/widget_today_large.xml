@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/widget"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/primary"
+              android:orientation="horizontal"
+              tools:layout_height="50dp"
+              tools:layout_width="190dp">
+
+	<ImageView
+		android:id="@+id/widget_icon"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:adjustViewBounds="true"
+		android:gravity="center"
+		tools:src="@drawable/art_clear"/>
+
+	<TextView
+		android:id="@+id/widget_desc"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:layout_weight="1"
+		android:textColor="@android:color/white"
+		tools:text="Clear baby"/>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/widget_high_temperature"
+			style="@style/AppTheme.HighTemp"
+			tools:text="30°"/>
+
+		<TextView
+			android:id="@+id/widget_low_temperature"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:fontFamily="sans-serif-light"
+			android:gravity="center"
+			android:textColor="@color/white"
+			android:textSize="13dp"
+			tools:text="20°"/>
+	</LinearLayout>
+</LinearLayout>

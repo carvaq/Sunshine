@@ -19,11 +19,13 @@ import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.example.android.sunshine.app.MainActivity;
@@ -38,12 +40,15 @@ public class TodayWidgetIntentService extends IntentService {
     private static final String[] FORECAST_COLUMNS = {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
-            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
     };
     // these indices must match the projection
     private static final int INDEX_WEATHER_ID = 0;
     private static final int INDEX_SHORT_DESC = 1;
     private static final int INDEX_MAX_TEMP = 2;
+    private static final int INDEX_MIN_TEMP = 3;
+    private static final String TAG = TodayWidgetIntentService.class.getSimpleName();
 
     public TodayWidgetIntentService() {
         super("TodayWidgetIntentService");
@@ -75,12 +80,32 @@ public class TodayWidgetIntentService extends IntentService {
         int weatherArtResourceId = Utility.getArtResourceForWeatherCondition(weatherId);
         String description = data.getString(INDEX_SHORT_DESC);
         double maxTemp = data.getDouble(INDEX_MAX_TEMP);
+        double minTemp = data.getDouble(INDEX_MIN_TEMP);
         String formattedMaxTemperature = Utility.formatTemperature(this, maxTemp);
+        String formattedMinTemperature = Utility.formatTemperature(this, minTemp);
         data.close();
+
 
         // Perform this loop procedure for each Today widget
         for (int appWidgetId : appWidgetIds) {
-            int layoutId = R.layout.widget_today_small;
+            int width;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+                width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+            } else {
+                AppWidgetProviderInfo info = appWidgetManager.getAppWidgetInfo(appWidgetId);
+                width = info.minWidth;
+            }
+
+            int layoutId;
+            if (width < 110) {
+                layoutId = R.layout.widget_today_small;
+            } else if (width < 220) {
+                layoutId = R.layout.widget_today;
+            } else {
+                layoutId = R.layout.widget_today_large;
+            }
+
             RemoteViews views = new RemoteViews(getPackageName(), layoutId);
 
             // Add the data to the RemoteViews
@@ -91,6 +116,13 @@ public class TodayWidgetIntentService extends IntentService {
             }
             views.setTextViewText(R.id.widget_high_temperature, formattedMaxTemperature);
 
+            if (width > 110) {
+                views.setTextViewText(R.id.widget_low_temperature, formattedMinTemperature);
+            }
+
+            if (width >= 220) {
+                views.setTextViewText(R.id.widget_desc, description);
+            }
             // Create an Intent to launch MainActivity
             Intent launchIntent = new Intent(this, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
@@ -99,6 +131,7 @@ public class TodayWidgetIntentService extends IntentService {
             // Tell the AppWidgetManager to perform an update on the current app widget
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
+
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
