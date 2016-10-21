@@ -18,7 +18,6 @@ package com.example.android.sunshine.app;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -26,6 +25,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,10 +49,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     static final String DETAIL_URI = "URI";
     static final String DETAIL_TRANSITION_ANIMATION = "DTA";
+
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
     private String mForecast;
     private Uri mUri;
+    private boolean mTransitionAnimation;
 
     private static final int DETAIL_LOADER = 0;
 
@@ -97,8 +99,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mPressureView;
     private TextView mPressureLabelView;
 
-    private boolean mTransitionAnimation;
-
     public DetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -110,7 +110,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle arguments = getArguments();
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
-            mTransitionAnimation = arguments.getBoolean(DETAIL_TRANSITION_ANIMATION, false);
+            mTransitionAnimation = arguments.getBoolean(DetailFragment.DETAIL_TRANSITION_ANIMATION, false);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail_start, container, false);
@@ -136,7 +136,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (getActivity() instanceof DetailActivity) {
+        if ( getActivity() instanceof DetailActivity ){
             // Inflate the menu; this adds items to the action bar if it is present.
             inflater.inflate(R.menu.detailfragment, menu);
             finishCreatingMenu(menu);
@@ -157,7 +157,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onActivityCreated(savedInstanceState);
     }
 
-    void onLocationChanged(String newLocation) {
+    void onLocationChanged( String newLocation ) {
         // replace the uri, since the location has changed
         Uri uri = mUri;
         if (null != uri) {
@@ -170,7 +170,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (null != mUri) {
+        if ( null != mUri ) {
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
             return new CursorLoader(
@@ -183,27 +183,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             );
         }
         ViewParent vp = getView().getParent();
-        if (vp instanceof CardView) {
-            ((View) vp).setVisibility(View.INVISIBLE);
+        if ( vp instanceof CardView ) {
+            ((View)vp).setVisibility(View.INVISIBLE);
         }
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mTransitionAnimation) {
-            getActivity().supportPostponeEnterTransition();
-        }
         if (data != null && data.moveToFirst()) {
             ViewParent vp = getView().getParent();
-            if (vp instanceof CardView) {
-                ((View) vp).setVisibility(View.VISIBLE);
+            if ( vp instanceof CardView ) {
+                ((View)vp).setVisibility(View.VISIBLE);
             }
 
             // Read weather condition ID from cursor
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            if (Utility.usingLocalGraphics(getActivity())) {
+            if ( Utility.usingLocalGraphics(getActivity()) ) {
                 mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
             } else {
                 // Use weather art image
@@ -216,7 +213,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             // Read date from cursor and update views for day of week and date
             long date = data.getLong(COL_WEATHER_DATE);
-            String dateText = Utility.getFullFriendlyDayString(getActivity(), date);
+            String dateText = Utility.getFullFriendlyDayString(getActivity(),date);
             mDateView.setText(dateText);
 
             // Get description from weather condition ID
@@ -267,23 +264,23 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
 
         }
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity)getActivity();
         Toolbar toolbarView = (Toolbar) getView().findViewById(R.id.toolbar);
 
-        // We need to start the enter details_window_enter_transition after the data has loaded
-        if (activity instanceof DetailActivity) {
+        // We need to start the enter transition after the data has loaded
+        if ( mTransitionAnimation ) {
             activity.supportStartPostponedEnterTransition();
 
-            if (null != toolbarView) {
+            if ( null != toolbarView ) {
                 activity.setSupportActionBar(toolbarView);
 
                 activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
                 activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         } else {
-            if (null != toolbarView) {
+            if ( null != toolbarView ) {
                 Menu menu = toolbarView.getMenu();
-                if (null != menu) menu.clear();
+                if ( null != menu ) menu.clear();
                 toolbarView.inflateMenu(R.menu.detailfragment);
                 finishCreatingMenu(toolbarView.getMenu());
             }
@@ -291,6 +288,5 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-    }
+    public void onLoaderReset(Loader<Cursor> loader) { }
 }
